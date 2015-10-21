@@ -13,11 +13,11 @@ function app(db){
 
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
-  app.set('view engine', 'jade');
+  app.set('view engine', 'hbs');
 
   // uncomment after placing your favicon in /public
   //app.use(favicon(__dirname + '/public/favicon.ico'));
-  app.use(logger('dev'));
+  app.use(logger('combined'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
@@ -30,6 +30,16 @@ function app(db){
 		var file = path.join(__dirname, 'public/front-end/index.html');
 		res.sendFile(file);
 	});
+
+  //Levantamos la ruta del api
+  var apiRoute = require('./routes/api_v1')(db);
+  app.use("/api", apiRoute);
+
+  //levantamos la ruta del Manejador de Reportes y Mantenimientos
+  var backRoute = require('./routes/backoffice')(db);
+  app.use("/backoffice", backRoute);
+
+
   // catch 404 and forward to error handler
   app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -60,6 +70,7 @@ function app(db){
       error: {}
     });
   });
+
   return app;
 }
 
